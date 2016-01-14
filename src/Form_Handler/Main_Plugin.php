@@ -21,8 +21,8 @@ class Main_Plugin {
 	 *
 	 */
 	public function hookup_admin() {
-		add_action( 'admin_init', [ $this->admin, '_init_settings' ] );
-		add_action( 'admin_menu', [ $this->admin, '_add_options_page' ] );
+		// add_action( 'admin_init', [ $this->admin, '_init_settings' ] );
+		// add_action( 'admin_menu', [ $this->admin, '_add_options_page' ] );
 		add_action( 'cmb2_admin_init', [ $this->admin, '_add_options_page_metabox' ] );
 
 		add_action( 'admin_head', [ $this->admin, '_help_tab' ] );
@@ -39,6 +39,8 @@ class Main_Plugin {
 	public function hookup_ajax() {
 		add_action( "wp_ajax_form_handler", [ $this->handler, '_handle_form' ] );
 		add_action( "wp_ajax_nopriv_form_handler", [ $this->handler, '_handle_form' ] );
+
+		add_filter( 'template_redirect', [$this->handler, '_handle_form' ], 99 );
 	}
 
 	public function hookup_ctps() {

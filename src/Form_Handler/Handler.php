@@ -19,42 +19,11 @@ class Handler {
 			wp_die( 'Post before get, such is the nature of this game.' );
 		}
 
-		// Necesitamos una configuración de formulario? En realidad, debiera tener un handler por defecto.
-		if ( ! isset( $_REQUEST['FRM'] ) || ! $_REQUEST['FRM'] ) {
-			wp_die( 'You need to know where you are going before you go there' );
-		}
-
-		// Pillo la configuración para los handlers
-		$options = get_option( $this->pluginId );
-
-		// Ver con qué "Form" estamos trabajando.
-		$request_frm = isset( $_REQUEST['FRM'] ) ? $_REQUEST['FRM'] : 'default';
-
-
-		if ( 'default' !== $request_frm && isset( $options['forms'] ) ) {
-
-			// Filtro para pillar el formulario que venga en el request.
-			$filter_forms = function ( $input, $callback = null ) use ( $request_frm ) {
-				if ( isset( $input['slug'] ) && $input['slug'] === $request_frm ) {
-					return $input;
-				}
-
-				return false;
-
-
-			};
-
-			$new_opts = array_filter( $options['forms'], $filter_forms );
-
-			if (empty($new_opts)) {
-				wp_die('No existe ningún formulario para esta dirección');
-			}
-			$value = $new_opts[0];
-		}
-		else {
-
-		}
-
+		$form         = get_post();
+		$type         = get_post_meta( $form->ID, 'redirect_type', true );
+		$redirect_url = get_post_meta( $form->ID, 'redirect', true );
+		$emails       = get_post_meta( $form->ID, 'email', true );
+		$template     = get_post_meta( $form->ID, 'template', true );
 		$args = [
 			'result' => 0,
 			'params' => $_GET,
@@ -71,10 +40,10 @@ class Handler {
 				return "[" . $item . "]";
 			}, array_keys( $args['params'] ) ),
 			$args['params'],
-			$value['template']
+			$template
 		);
 
-		foreach ( $value['email'] as $email ) {
+		foreach ( $emails as $email ) {
 			wp_mail( $email, 'mensaje de prueba', $new_msg );
 		}
 
