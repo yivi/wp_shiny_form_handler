@@ -77,6 +77,48 @@ class Admin {
 		register_setting( $this->key, $this->key );
 	}
 
+	public function _add_post_type() {
+		register_post_type( 'shiny_form_handler', [
+			'label'               => __( 'Formularios', 'shiny_form_handler' ),
+			'labels'              => [
+				'singular_name' => __( 'Formulario', 'shiny_form_handler' ),
+				'add_new'       => _x( 'Configurar nuevo', 'formulario', 'shiny_form_handler' ),
+				'add_new_item'  => __( 'Configurar nuevo formulario', 'shiny_form_handler' ),
+				'new_item'      => __( 'Nuevo formulario', 'shiny_form_handler' ),
+				'view_item'     => __( 'Ver formulario', 'shiny_form_handler' ),
+			],
+			'public'              => true,
+			'exclude_from_search' => true,
+			'show_in_nav_menus'   => false,
+			'show_in_admin_bar'   => false,
+			'menu_position'       => 100,
+			// FIXME: Capabilities
+			'supports'            => [ 'title', 'author' ],
+		] );
+	}
+
+
+	public function _help_tab() {
+
+		$screen = get_current_screen();
+
+		// Return early if we're not on the book post type.
+		if ( 'shiny_form_handler' != $screen->post_type ) {
+			return;
+		}
+
+		// Setup help tab args.
+		$args = [
+			'id'      => 'shiny_form_handler_help',
+			'title'   => 'Ayuda Formularios',
+			'content' => '<h3>Forma de uso</h3><p>blah, blah</p>',
+		];
+
+		// Add the help tab.
+		$screen->add_help_tab( $args );
+
+	}
+
 	/**
 	 * Add menu options page
 	 *
@@ -100,74 +142,38 @@ class Admin {
 	public function _add_options_page_metabox() {
 
 		$cmb = new_cmb2_box( [
-			'id'         => $this->metabox_id,
-			'hookup'     => false,
-			'cmb_styles' => false,
-			'show_on'    => [
-				// These are important, don't remove
-				'key'   => 'options-page',
-				'value' => [ $this->key, ],
-			],
+			'id'           => $this->metabox_id,
+			'object_types' => [ 'shiny_form_handler' ],
+			'context'      => 'normal',
+			'priority'     => 'high',
+			'show_names'   => true,
+			'title' => 'Ajustes'
 		] );
-
-		// Set our CMB2 fields
 
 
 		$cmb->add_field( [
-			'name'    => __( 'Test Text', 'gorditpr' ),
-			'desc'    => __( 'field description (optional)', 'gorditpr' ),
-			'id'      => 'test_text',
-			'type'    => 'text',
-			'default' => 'Default Text',
-		] );
-
-
-		$group = $cmb->add_field( [
-			'id'          => 'forms',
-			'type'        => 'group',
-			'description' => __( 'Generates reusable form entries', 'gorditpr' ),
-			'repeatable'  => true, // use false if you want non-repeatable group,
-			'options'     => [
-				'group_title'   => __( 'Formulario {#}', 'gorditpr' ),
-				'add_button'    => __( 'Añadir un formulario ', 'gorditpr' ),
-				'remove_button' => __( 'Eliminar Formulario', 'gorditpr' ),
-				'sortable'      => true,
-				'closed'        => false,
+			'name'    => __( 'Tipo respuesta', 'shiny_form_handler' ),
+			'desc'    => __( 'Redirección o respuesta AJAX', 'shiny_form_handler' ),
+			'id'      => 'redirect_type',
+			'type'    => 'radio',
+			'default' => 'pre',
+			'options' => [
+				'pre'  => 'Redirección a página predefinida (abajo, en "URL Redirect")',
+				'self' => 'Intenta devolver a la misma página desde la que se envió el formulario (No funciona en HTTPS)',
+				'ajax' => 'Respuesta AJAX. Devuelve un JSON con información de estado.',
 			],
 		] );
 
-
-		$cmb->add_group_field( $group, [
-			'name' => __( 'Identificador', 'gorditpr' ),
-			'desc' => __( 'Tipo Slug: será convertido a minusculas/números', 'gorditpr' ),
-			'id'   => 'slug',
-			'type' => 'text',
-		] );
-
-		$cmb->add_group_field( $group,
-			[
-				'name'    => __( 'Tipo respuesta' ),
-				'desc'    => __( 'Redirección o respuesta AJAX', 'gorditopr' ),
-				'id'      => 'redirect_type',
-				'type'    => 'radio',
-				'default' => 'pre',
-				'options' => [
-					'pre' => 'Redirección a página predefinida (abajo, en "URL Redirect")',
-					'self'    => 'Intenta devolver a la misma página desde la que se envió el formulario (No funciona en HTTPS)',
-					'ajax'    => 'Respuesta AJAX. Devuelve un JSON con información de estado.'
-				]
-			] );
-
-		$cmb->add_group_field( $group, [
-			'name' => __( 'URL Redirect después de envío', 'gorditpr' ),
-			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'gorditpr' ),
+		$cmb->add_field( [
+			'name' => __( 'URL Redirect después de envío', 'shiny_form_handler' ),
+			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
 			'id'   => 'redirect',
 			'type' => 'text_url',
 		] );
 
-		$cmb->add_group_field( $group, [
-			'name'       => __( 'Email de Destino', 'gorditpr' ),
-			'desc'       => __( 'Un correo válido, por favor', 'gorditpr' ),
+		$cmb->add_field( [
+			'name'       => __( 'Email de Destino', 'shiny_form_handler' ),
+			'desc'       => __( 'Un correo válido, por favor', 'shiny_form_handler' ),
 			'id'         => 'email',
 			'type'       => 'text_email',
 			'repeatable' => true,
@@ -177,9 +183,9 @@ class Admin {
 			],
 		] );
 
-		$cmb->add_group_field( $group, [
+		$cmb->add_field( [
 			'name' => __( 'Plantilla', 'gorditpr' ),
-			'desc' => __( 'Usar [campo] para insertar campos del formulario. Consultar nombres de los campos con el creador del form.', 'gorditpr' ),
+			'desc' => __( 'Usar [campo] para insertar campos del formulario. Consultar nombres de los campos con el creador del form.', 'shiny_form_handler' ),
 			'id'   => 'template',
 			'type' => 'textarea',
 		] );
@@ -192,16 +198,16 @@ class Admin {
 	 *
 	 * @since 0.1.0
 	 *
-	 * @param array  $field              The passed in `CMB2_Field` object
-	 * @param mixed  $value              The value of this field escaped.
+	 * @param array $field The passed in `CMB2_Field` object
+	 * @param mixed $value The value of this field escaped.
 	 *                                   It defaults to `sanitize_text_field`.
 	 *                                   If you need the unescaped value, you can access it
 	 *                                   via `$field->value()`
-	 * @param int    $object_id          The ID of the current object
-	 * @param string $object_type        The type of object you are working with.
+	 * @param int $object_id The ID of the current object
+	 * @param string $object_type The type of object you are working with.
 	 *                                   Most commonly, `post` (this applies to all post-types),
 	 *                                   but could also be `comment`, `user` or `options-page`.
-	 * @param object $field_type_object  The `CMB2_Types` object
+	 * @param object $field_type_object The `CMB2_Types` object
 	 */
 	function validation_field_render_cb( $field, $value, $object_id, $object_type, $field_type_object ) {
 

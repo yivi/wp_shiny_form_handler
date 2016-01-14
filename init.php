@@ -34,5 +34,15 @@ function form_generic_handler_startup() {
 		$plugin->hookup_admin();
 	};
 
+	$plugin->hookup_ctps();
 	$plugin->hookup_ajax();
 }
+
+function form_generic_handler_activation() {
+	$admin = new Admin( 'Formularios', 'shiny_form_handler' );
+
+	$admin->_add_post_type();
+
+	flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'Form_Handler\form_generic_handler_activation' );

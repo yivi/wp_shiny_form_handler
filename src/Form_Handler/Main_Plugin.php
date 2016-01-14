@@ -25,6 +25,8 @@ class Main_Plugin {
 		add_action( 'admin_menu', [ $this->admin, '_add_options_page' ] );
 		add_action( 'cmb2_admin_init', [ $this->admin, '_add_options_page_metabox' ] );
 
+		add_action( 'admin_head', [ $this->admin, '_help_tab' ] );
+
 		add_action( "cmb2_save_options-page_fields_{$this->admin->getMetaboxId()}", [
 			$this->admin,
 			'settings_notices',
@@ -37,5 +39,9 @@ class Main_Plugin {
 	public function hookup_ajax() {
 		add_action( "wp_ajax_form_handler", [ $this->handler, '_handle_form' ] );
 		add_action( "wp_ajax_nopriv_form_handler", [ $this->handler, '_handle_form' ] );
+	}
+
+	public function hookup_ctps() {
+		add_action( 'init', [ $this->admin, '_add_post_type' ] );
 	}
 }
