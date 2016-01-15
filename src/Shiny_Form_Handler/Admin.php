@@ -86,6 +86,7 @@ class Admin {
 				'add_new_item'  => __( 'Configurar nuevo formulario', 'shiny_form_handler' ),
 				'new_item'      => __( 'Nuevo formulario', 'shiny_form_handler' ),
 				'view_item'     => __( 'Ver formulario', 'shiny_form_handler' ),
+				'edit_item'     => __( 'Editar Formulario', 'shiny_form_handler')
 			],
 			'public'              => true,
 			'exclude_from_search' => true,
