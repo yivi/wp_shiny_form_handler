@@ -142,19 +142,19 @@ class Admin {
 	public function _add_options_page_metabox() {
 
 		$cmb = new_cmb2_box( [
-			'id'           => $this->metabox_id,
+			'id'           => $this->getKey() . '_redirect',
 			'object_types' => [ 'shiny_form_handler' ],
 			'context'      => 'normal',
 			'priority'     => 'high',
 			'show_names'   => true,
-			'title' => 'Ajustes'
+			'title'        => 'Redirección'
 		] );
 
 
 		$cmb->add_field( [
 			'name'    => __( 'Tipo respuesta', 'shiny_form_handler' ),
 			'desc'    => __( 'Redirección o respuesta AJAX', 'shiny_form_handler' ),
-			'id'      => 'redirect_type',
+			'id'      => $cmb->cmb_id . 'redirect_type',
 			'type'    => 'radio',
 			'default' => 'pre',
 			'options' => [
@@ -165,16 +165,42 @@ class Admin {
 		] );
 
 		$cmb->add_field( [
-			'name' => __( 'URL Redirect después de envío', 'shiny_form_handler' ),
+			'name' => __( 'URL Redirect después de envío (éxito)', 'shiny_form_handler' ),
 			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
-			'id'   => 'redirect',
+			'id'   => $cmb->cmb_id . '_redirect_success',
 			'type' => 'text_url',
 		] );
 
+
 		$cmb->add_field( [
+			'name' => __( 'URL Redirect después de envío (fallo validación, sin implementar)', 'shiny_form_handler' ),
+			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
+			'id'   => $cmb->cmb_id . 'redirect_fail',
+			'type' => 'text_url',
+		] );
+
+
+		$redbox = new_cmb2_box( [
+			'id'           => $this->getKey() . '_email',
+			'object_types' => [ 'shiny_form_handler' ],
+			'context'      => 'normal',
+			'priority'     => 'high',
+			'show_names'   => true,
+			'title'        => __( 'Ajustes Correo', 'shiny_form_handler' ),
+		] );
+
+		$redbox->add_field( [
+			'name'  => __( 'Enviar correo', 'shiny_form_handler' ),
+			'desc'  => __( 'Marcar para enviar correos después de procesar el formulario', 'shiny_form_handler' ),
+			'id'    => $redbox->cmb_id . '_mail_enable',
+			'type'  => 'checkbox',
+			'value' => 1
+		] );
+
+		$redbox->add_field( [
 			'name'       => __( 'Email de Destino', 'shiny_form_handler' ),
 			'desc'       => __( 'Un correo válido, por favor', 'shiny_form_handler' ),
-			'id'         => 'email',
+			'id'         => $redbox->cmb_id . 'email',
 			'type'       => 'text_email',
 			'repeatable' => true,
 			'options'    => [
@@ -183,10 +209,18 @@ class Admin {
 			],
 		] );
 
-		$cmb->add_field( [
+		$redbox->add_field( [
+			'name'         => __( 'Asunto del mensaje', 'shiny_form_handler' ),
+			'desc'         => __( 'También se pueden insertar <code>[campos]</code>.' ),
+			'type'         => 'text',
+			'place_holder' => 'Subject...',
+			'id'           => $redbox->cmb_id . '_'
+		] );
+
+		$redbox->add_field( [
 			'name' => __( 'Plantilla', 'gorditpr' ),
 			'desc' => __( 'Usar [campo] para insertar campos del formulario. Consultar nombres de los campos con el creador del form.', 'shiny_form_handler' ),
-			'id'   => 'template',
+			'id'   => $redbox->cmb_id . 'template',
 			'type' => 'textarea',
 		] );
 
@@ -217,6 +251,8 @@ class Admin {
 	/**
 	 * Admin page markup. Mostly handled by CMB2
 	 * @since  0.1.0
+	 *
+	 * @deprecated
 	 */
 	public function admin_page_display() {
 		?>
@@ -235,6 +271,8 @@ class Admin {
 	 * @param  int $object_id Option key
 	 * @param  array $updated Array of updated fields
 	 *
+	 * @deprecated
+	 *
 	 */
 	protected function settings_notices( $object_id, $updated ) {
 		if ( $object_id !== $this->key || empty( $updated ) ) {
@@ -247,4 +285,3 @@ class Admin {
 
 
 }
-
