@@ -1,5 +1,5 @@
 <?php
-namespace Form_Handler;
+namespace Shiny_Form_Handler;
 
 class Main_Plugin {
 	private $admin;

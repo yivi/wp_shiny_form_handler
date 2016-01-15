@@ -1,14 +1,22 @@
 <?php
 /**
+ * @category     WordPress_Plugin
+ * @package      Shiny_Form_Handler
+ * @author       Yivi
+ * @license      GPL-2.0+
+ * @link         http://www.yivoff.com
+ *
  * Plugin Name: Super Gordit
  * Plugin URI: http://www.yivoff.com
  * Description: blah, blah, blah
  * Author: yivi
  * Version: 1.0
  * @version 1.0
+ *
+ * Text domain: shiny_form_handler
  */
 
-namespace Form_Handler;
+namespace Shiny_Form_Handler;
 
 // Librería CMB2, que uso para generar los forms
 require_once( dirname( __FILE__ ) . '/inc/CMB2/init.php' );
@@ -17,7 +25,7 @@ require_once( dirname( __FILE__ ) . '/inc/CMB2/init.php' );
 require_once( dirname( __FILE__ ) . '/autoload.php' );
 
 // Cuando está todo cargado empezamos a trabajar.
-add_action( 'plugins_loaded', 'Form_Handler\form_generic_handler_startup' );
+add_action( 'plugins_loaded', 'Shiny_Form_Handler\form_generic_handler_startup' );
 
 
 // Main Plugin Routine
@@ -45,4 +53,5 @@ function form_generic_handler_activation() {
 
 	flush_rewrite_rules();
 }
-register_activation_hook( __FILE__, 'Form_Handler\form_generic_handler_activation' );
+
+register_activation_hook( __FILE__, 'Shiny_Form_Handler\form_generic_handler_activation' );

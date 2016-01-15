@@ -1,9 +1,11 @@
 <?php
 
-function form_handler_autoload( $class ) {
+namespace Shiny_Form_Handler;
+
+function autoload( $class ) {
 
 	// project-specific namespace prefix
-	$prefix = 'Form_Handler\\';
+	$prefix = 'Shiny_Form_Handler\\';
 
 	// base directory for the namespace prefix
 	$base_dir = __DIR__ . '/src/';
@@ -27,4 +29,4 @@ function form_handler_autoload( $class ) {
 	}
 }
 
-spl_autoload_register( 'form_handler_autoload' );
+spl_autoload_register( 'Shiny_Form_Handler\autoload' );
