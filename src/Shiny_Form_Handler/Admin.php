@@ -2,8 +2,8 @@
 namespace Shiny_Form_Handler;
 
 /**
- * CMB2 Theme Options
- * @version 0.1.0
+ * Class Admin
+ * @package Shiny_Form_Handler
  */
 class Admin {
 	/**
@@ -11,12 +11,6 @@ class Admin {
 	 * @var string
 	 */
 	private $key = '';
-
-	/**
-	 * Options page metabox id
-	 * @var string
-	 */
-	private $metabox_id = '';
 
 	/**
 	 * Options Page title
@@ -34,19 +28,12 @@ class Admin {
 	/**
 	 * Constructor
 	 *
-	 * @param $title string
-	 *
 	 * @param string $key
 	 *
 	 * @since 0.1.0
 	 */
-	public function __construct( $title = 'Default', $key = 'defaultpr' ) {
-		// Set our title (menu id and page title)
-		$this->title = $title;
-
-		// This we use to save the options, and as a prefix for the metaboxes
-		$this->key        = $key;
-		$this->metabox_id = $key . "option_metabox";
+	public function __construct( $key = '' ) {
+		$this->key = $key;
 	}
 
 
@@ -59,24 +46,10 @@ class Admin {
 		return $this->key;
 	}
 
-	/**
-	 * Getting getter all the time
-	 *
-	 * @return string
-	 */
-	public function getMetaboxId() {
-		return $this->metabox_id;
-	}
-
 
 	/**
-	 * Register our setting to WP
-	 * @since  0.1.0
+	 * Creamos el post-type pertinente
 	 */
-	public function _init_settings() {
-		register_setting( $this->key, $this->key );
-	}
-
 	public function _add_post_type() {
 		register_post_type( 'shiny_form_handler', [
 			'label'               => __( 'Formularios', 'shiny_form_handler' ),
@@ -86,19 +59,23 @@ class Admin {
 				'add_new_item'  => __( 'Configurar nuevo formulario', 'shiny_form_handler' ),
 				'new_item'      => __( 'Nuevo formulario', 'shiny_form_handler' ),
 				'view_item'     => __( 'Ver formulario', 'shiny_form_handler' ),
-				'edit_item'     => __( 'Editar Formulario', 'shiny_form_handler')
+				'edit_item'     => __( 'Editar Formulario', 'shiny_form_handler' )
 			],
 			'public'              => true,
 			'exclude_from_search' => true,
 			'show_in_nav_menus'   => false,
 			'show_in_admin_bar'   => false,
 			'menu_position'       => 100,
-			// FIXME: Capabilities
+			// FIXME: Capabilities wtf?
 			'supports'            => [ 'title', 'author' ],
 		] );
 	}
 
 
+	/**
+	 * Renders the help tabs on top.
+	 *
+	 */
 	public function _help_tab() {
 
 		$screen = get_current_screen();
@@ -138,7 +115,10 @@ class Admin {
 	}
 
 	/**
-	 * Generates
+	 * Generamos las metaboxes con CMB2.
+	 *
+	 * @todo Usar la llamada OOP de CMB2
+	 * @todo Dejar de usar CMB2
 	 */
 	public function _add_options_page_metabox() {
 
@@ -155,20 +135,19 @@ class Admin {
 		$cmb->add_field( [
 			'name'    => __( 'Tipo respuesta', 'shiny_form_handler' ),
 			'desc'    => __( 'Redirección o respuesta AJAX', 'shiny_form_handler' ),
-			'id'      => $cmb->cmb_id . 'redirect_type',
+			'id'      => $cmb->cmb_id . '_type',
 			'type'    => 'radio',
 			'default' => 'pre',
 			'options' => [
-				'pre'  => 'Redirección a página predefinida (abajo, en "URL Redirect")',
-				'self' => 'Intenta devolver a la misma página desde la que se envió el formulario (No funciona en HTTPS)',
-				'ajax' => 'Respuesta AJAX. Devuelve un JSON con información de estado.',
+				'pre'  => __( 'Redirección a página predefinida (abajo, en "URL Redirect"; o vía parámetro "redirect" en POST)', 'shiny_form_handler' ),
+				'ajax' => __( 'Respuesta AJAX. Devuelve un JSON con información de estado.', 'shiny_form_handler' ),
 			],
 		] );
 
 		$cmb->add_field( [
 			'name' => __( 'URL Redirect después de envío (éxito)', 'shiny_form_handler' ),
 			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
-			'id'   => $cmb->cmb_id . '_redirect_success',
+			'id'   => $cmb->cmb_id . '_url_success',
 			'type' => 'text_url',
 		] );
 
@@ -176,7 +155,7 @@ class Admin {
 		$cmb->add_field( [
 			'name' => __( 'URL Redirect después de envío (fallo validación, sin implementar)', 'shiny_form_handler' ),
 			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
-			'id'   => $cmb->cmb_id . 'redirect_fail',
+			'id'   => $cmb->cmb_id . '_url_fail',
 			'type' => 'text_url',
 		] );
 
@@ -193,7 +172,7 @@ class Admin {
 		$redbox->add_field( [
 			'name'  => __( 'Enviar correo', 'shiny_form_handler' ),
 			'desc'  => __( 'Marcar para enviar correos después de procesar el formulario', 'shiny_form_handler' ),
-			'id'    => $redbox->cmb_id . '_mail_enable',
+			'id'    => $redbox->cmb_id . '_enable',
 			'type'  => 'checkbox',
 			'value' => 1
 		] );
@@ -201,7 +180,7 @@ class Admin {
 		$redbox->add_field( [
 			'name'       => __( 'Email de Destino', 'shiny_form_handler' ),
 			'desc'       => __( 'Un correo válido, por favor', 'shiny_form_handler' ),
-			'id'         => $redbox->cmb_id . 'email',
+			'id'         => $redbox->cmb_id . '_address',
 			'type'       => 'text_email',
 			'repeatable' => true,
 			'options'    => [
@@ -211,77 +190,21 @@ class Admin {
 		] );
 
 		$redbox->add_field( [
-			'name'         => __( 'Asunto del mensaje', 'shiny_form_handler' ),
-			'desc'         => __( 'También se pueden insertar <code>[campos]</code>.' ),
-			'type'         => 'text',
-			'place_holder' => 'Subject...',
-			'id'           => $redbox->cmb_id . '_'
+			'name'        => __( 'Asunto del mensaje', 'shiny_form_handler' ),
+			'desc'        => __( 'También se pueden insertar <code>[campos]</code>.' ),
+			'type'        => 'text',
+			'placeholder' => 'Subject...',
+			'id'          => $redbox->cmb_id . '_subject'
 		] );
 
 		$redbox->add_field( [
 			'name' => __( 'Plantilla', 'gorditpr' ),
 			'desc' => __( 'Usar [campo] para insertar campos del formulario. Consultar nombres de los campos con el creador del form.', 'shiny_form_handler' ),
-			'id'   => $redbox->cmb_id . 'template',
+			'id'   => $redbox->cmb_id . '_template',
 			'type' => 'textarea',
 		] );
 
 
-	}
-
-	/**
-	 * Render 'address' custom field type
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $field The passed in `CMB2_Field` object
-	 * @param mixed $value The value of this field escaped.
-	 *                                   It defaults to `sanitize_text_field`.
-	 *                                   If you need the unescaped value, you can access it
-	 *                                   via `$field->value()`
-	 * @param int $object_id The ID of the current object
-	 * @param string $object_type The type of object you are working with.
-	 *                                   Most commonly, `post` (this applies to all post-types),
-	 *                                   but could also be `comment`, `user` or `options-page`.
-	 * @param object $field_type_object The `CMB2_Types` object
-	 */
-	function validation_field_render_cb( $field, $value, $object_id, $object_type, $field_type_object ) {
-
-	}
-
-
-	/**
-	 * Admin page markup. Mostly handled by CMB2
-	 * @since  0.1.0
-	 *
-	 * @deprecated
-	 */
-	public function admin_page_display() {
-		?>
-		<div class="wrap cmb2-options-page <?php echo $this->key; ?>">
-			<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
-			<?php cmb2_metabox_form( $this->metabox_id, $this->key ); ?>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Register settings notices for display
-	 *
-	 * @since  0.1.0
-	 *
-	 * @param  int $object_id Option key
-	 * @param  array $updated Array of updated fields
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function settings_notices( $object_id, $updated ) {
-		if ( $object_id !== $this->key || empty( $updated ) ) {
-			return;
-		}
-
-		add_settings_error( $this->key . '-notices', '', __( 'Settings updated.', 'gorditpr' ), 'updated' );
-		settings_errors( $this->key . '-notices' );
 	}
 
 

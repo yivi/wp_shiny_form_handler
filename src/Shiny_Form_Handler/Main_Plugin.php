@@ -27,10 +27,10 @@ class Main_Plugin {
 
 		add_action( 'admin_head', [ $this->admin, '_help_tab' ] );
 
-		add_action( "cmb2_save_options-page_fields_{$this->admin->getMetaboxId()}", [
-			$this->admin,
-			'settings_notices',
-		], 10, 2 );
+		//		add_action( "cmb2_save_options-page_fields_{$this->admin->getMetaboxId()}", [
+		//			$this->admin,
+		//			'settings_notices',
+		//		], 10, 2 );
 	}
 
 	/**

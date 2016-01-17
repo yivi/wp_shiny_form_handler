@@ -18,6 +18,17 @@
 
 namespace Shiny_Form_Handler;
 
+/**
+ * ID único que usamos en algún sitio del plugin.
+ */
+define( 'SHINY_FORM_ID', 'shinyform' );
+
+
+/**
+ * Número de versión, por si sirivera para algo.
+ */
+define( 'SHINY_FORM_VERSION', '1.0' );
+
 // Librería CMB2, que uso para generar los forms
 require_once( dirname( __FILE__ ) . '/inc/CMB2/init.php' );
 
@@ -28,12 +39,14 @@ require_once( dirname( __FILE__ ) . '/autoload.php' );
 add_action( 'plugins_loaded', 'Shiny_Form_Handler\form_generic_handler_startup' );
 
 
-// Main Plugin Routine
+/**
+ *  Main Plugin Routine
+ */
 function form_generic_handler_startup() {
 
-	$key = 'formhandler';
+	$key = 'shinyform';
 
-	$admin   = new Admin( 'Admin. Formularios', $key );
+	$admin   = new Admin( $key );
 	$handler = new Handler( $key );
 
 	$plugin = new Main_Plugin( $admin, $handler );
@@ -46,6 +59,9 @@ function form_generic_handler_startup() {
 	$plugin->hookup_ajax();
 }
 
+/**
+ * Rewrite rules on activation, for greater victory.
+ */
 function form_generic_handler_activation() {
 	$admin = new Admin( 'Formularios', 'shiny_form_handler' );
 
