@@ -2,6 +2,11 @@
 
 namespace Shiny_Form_Handler;
 
+/**
+ * Autoloading callback
+ *
+ * @param string $class Namespace/Classname
+ */
 function autoload( $class ) {
 
 	// project-specific namespace prefix

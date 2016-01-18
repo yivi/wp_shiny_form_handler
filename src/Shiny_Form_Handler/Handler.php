@@ -27,6 +27,56 @@ class Handler {
 	}
 
 	/**
+	 * Procesamos el form request (enganchado a 'template_redirect')
+	 *
+	 */
+	public function _handle_form() {
+		$this->args = $_REQUEST;
+		// ??
+
+		// si no estamos procesando un form handler, salimos de aquí y dejamos que la vida siga su curso en WP.
+		if ( 'shiny_form_handler' !== get_post()->post_type ) {
+			return;
+		}
+
+		// Si no estamos en Debuglandia, sólo queremos posts.
+		if ( $_SERVER['REQUEST_METHOD'] !== 'POST' && ! WP_DEBUG ) {
+			wp_die( 'Post before get, such is the nature of this game.' );
+		}
+
+		$form = get_post();
+		$args = [
+			'result'       => 0,
+			'params'       => $_REQUEST,
+			'validated'    => true,
+			'fields_faild' => [ ],
+			'mails_sent'   => 0,
+			'extra_params' => [ ],
+		];
+
+
+		// fixme: A ver cómo se resuelve la validación...
+		$args = $this->validate( $args, $form );
+
+		$args = apply_filters( 'shiny_post_validate', $args, $this->key );
+
+		// fixme: en uno de los filtros anteriores aprovecharíamos para mandar las cosas al Servicio de Datos
+
+
+		if ( get_post_meta( $form->ID, $this->key . '_email_enable', true ) ) {
+			$this->email( $form, $args );
+		}
+
+		// si han elegido una redirección
+		if ( 'pre' === get_post_meta( $form->ID, $this->key . '_redirect_type', true ) ) {
+			$this->redirect( $args, $form );
+		} elseif ( 'ajax' === get_post_meta( $form->ID, $this->key . '_redirect_type', true ) ) {
+			// Y si en lugar de redirección quieren respuesta ajax
+			$this->output_json( $args, $form );
+		}
+	}
+
+	/**
 	 * @param array $args
 	 *
 	 * @param \WP_Post $form
@@ -36,7 +86,7 @@ class Handler {
 	 */
 	protected function validate( $args, $form ) {
 
-		$args = apply_filters( 'shiny_pre_validate', $args, $form->key );
+		$args = apply_filters( 'shiny_form_pre_validate', $args, $form->key );
 
 
 		return $args;
@@ -117,7 +167,6 @@ class Handler {
 		// Pillamos el url para redirigir de las opciones del formulario
 		$redirect_url = get_post_meta( $form->ID, $this->key . '_redirect_url_success', true );
 
-
 		// si viene un query param 'redirect' y parece ser un post id, sobreescribimos $redirect_url
 		if ( isset( $_REQUEST['redirect'] ) && is_int( $_REQUEST['redirect'] ) ) {
 			$permalink    = get_the_permalink( $_REQUEST['redirect'] );
@@ -163,7 +212,6 @@ class Handler {
 
 		if ( filter_var( $redirect_url, FILTER_VALIDATE_URL ) && 'http' === substr( $redirect_url, 0, 4 ) ) {
 
-
 			if ( $args['validated'] ) {
 				wp_redirect( add_query_arg( $args['extra_args'], $redirect_url ) );
 				die();
@@ -192,55 +240,5 @@ class Handler {
 		header( 'Content-type: application/json' );
 		echo json_encode( $args );
 		die();
-	}
-
-	/**
-	 * Procesamos el form request
-	 *
-	 */
-	public function _handle_form() {
-		$this->args = $_REQUEST;
-		// ??
-
-		// Si no estamos en Debuglandia, sólo queremos posts.
-		if ( $_SERVER['REQUEST_METHOD'] !== 'POST' && ! WP_DEBUG ) {
-			wp_die( 'Post before get, such is the nature of this game.' );
-		}
-
-		// si no estamos procesando un form handler, salimos de aquí y dejamos que la vida siga su curso en WP.
-		if ( 'shiny_form_handler' !== get_post()->post_type ) {
-			return;
-		}
-
-		$form = get_post();
-		$args = [
-			'result'       => 0,
-			'params'       => $_REQUEST,
-			'validated'    => true,
-			'fields_faild' => [ ],
-			'mails_sent'   => 0,
-			'extra_params' => [ ],
-		];
-
-
-		// fixme: A ver cómo se resuelve la validación...
-		$args = $this->validate( $args, $form );
-
-		$args = apply_filters( 'shiny_post_validate', $args, $this->key );
-
-		// fixme: en uno de los filtros anteriores aprovecharíamos para mandar las cosas al Servicio de Datos
-
-
-		if ( get_post_meta( $form->ID, $this->key . '_email_enable', true ) ) {
-			$this->email( $form, $args );
-		}
-
-		// si han elegido una redirección
-		if ( 'pre' === get_post_meta( $form->ID, $this->key . '_redirect_type', true ) ) {
-			$this->redirect( $args, $form );
-		} elseif ( 'ajax' === get_post_meta( $form->ID, $this->key . '_redirect_type', true ) ) {
-			// Y si en lugar de redirección quieren respuesta ajax
-			$this->output_json( $args, $form );
-		}
 	}
 }
