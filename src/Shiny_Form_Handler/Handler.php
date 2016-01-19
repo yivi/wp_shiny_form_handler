@@ -58,7 +58,7 @@ class Handler {
 		// fixme: A ver cómo se resuelve la validación...
 		$args = $this->validate( $args, $form );
 
-		$args = apply_filters( 'shiny_post_validate', $args, $this->key );
+		$args = apply_filters( 'shiny_form_post_validate', $args, $this->key );
 
 		// fixme: en uno de los filtros anteriores aprovecharíamos para mandar las cosas al Servicio de Datos
 
