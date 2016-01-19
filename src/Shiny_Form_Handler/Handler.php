@@ -213,15 +213,15 @@ class Handler {
 		if ( filter_var( $redirect_url, FILTER_VALIDATE_URL ) && 'http' === substr( $redirect_url, 0, 4 ) ) {
 
 			if ( $args['validated'] ) {
-				if ( ! empty ( $args['extra_args'] ) ) {
-					$redirect_url = add_query_arg( $args['extra_args'], $redirect_url );
+				if ( ! empty ( $args['extra_params'] ) ) {
+					$redirect_url = add_query_arg( $args['extra_params'], $redirect_url );
 				}
 
 				wp_redirect( $redirect_url );
 				die();
 			} else {
-				if ( ! empty ( $args['extra_args'] ) ) {
-					$redirect_url_fail = add_query_arg( $args['extra_args'], $redirect_url );
+				if ( ! empty ( $args['extra_params'] ) ) {
+					$redirect_url_fail = add_query_arg( $args['extra_params'], $redirect_url );
 				}
 				wp_redirect( $redirect_url_fail );
 				die();
