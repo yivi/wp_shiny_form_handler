@@ -205,7 +205,7 @@ class Handler {
 		$redirect_url_fail = apply_filters( 'shiny_form_redirect_fail', $redirect_url_fail, $args['params'] );
 
 
-		// y si pese a todos nuestros esfuerzos sigue vacío...
+// y si pese a todos nuestros esfuerzos sigue vacío...
 		if ( empty( $redirect_url_fail ) ) {
 			$redirect_url_fail = $redirect_url;
 		}
@@ -213,10 +213,17 @@ class Handler {
 		if ( filter_var( $redirect_url, FILTER_VALIDATE_URL ) && 'http' === substr( $redirect_url, 0, 4 ) ) {
 
 			if ( $args['validated'] ) {
-				wp_redirect( add_query_arg( $args['extra_args'], $redirect_url ) );
+				if ( ! empty ( $args['extra_args'] ) ) {
+					$redirect_url = add_query_arg( $args['extra_args'], $redirect_url );
+				}
+
+				wp_redirect( $redirect_url );
 				die();
 			} else {
-				wp_redirect( add_query_arg( $args['extra_args'], $redirect_url_fail ) );
+				if ( ! empty ( $args['extra_args'] ) ) {
+					$redirect_url_fail = add_query_arg( $args['extra_args'], $redirect_url );
+				}
+				wp_redirect( $redirect_url_fail );
 				die();
 			}
 
