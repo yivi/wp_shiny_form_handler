@@ -180,7 +180,7 @@ class Admin {
 		$redbox->add_field( [
 			'name'       => __( 'Email de Destino', 'shiny_form_handler' ),
 			'desc'       => __( 'Un correo válido, por favor', 'shiny_form_handler' ),
-			'id'         => $redbox->cmb_id . '_address',
+			'id'         => $redbox->cmb_id . '_addresses',
 			'type'       => 'text_email',
 			'repeatable' => true,
 			'options'    => [
