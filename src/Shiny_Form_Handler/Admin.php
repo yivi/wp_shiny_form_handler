@@ -117,8 +117,8 @@ class Admin {
 	/**
 	 * Generamos las metaboxes con CMB2.
 	 *
-	 * @todo Usar la llamada OOP de CMB2
-	 * @todo Dejar de usar CMB2
+	 * @todo Usar la llamada OOP de CMB2 y tener menos dependencias escondidas
+	 * @todo Dejar de usar CMB2 y listo.
 	 */
 	public function _add_options_page_metabox() {
 
@@ -144,6 +144,7 @@ class Admin {
 			],
 		] );
 
+
 		$cmb->add_field( [
 			'name' => __( 'URL Redirect después de envío (éxito)', 'shiny_form_handler' ),
 			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
@@ -159,6 +160,30 @@ class Admin {
 			'type' => 'text_url',
 		] );
 
+		$validation = new_cmb2_box(
+			[
+				'id'           => $this->getKey() . '_validation',
+				'object_types' => [ 'shiny_form_handler' ],
+				'context'      => 'normal',
+				'priority'     => 'high',
+				'show_names'   => true,
+				'title'        => __( 'Validación', 'shiny_form_handler' )
+			]
+		);
+
+		$validation->add_field( [
+			'desc'  => __( '¿Activar validación en el backend?', 'shiny_form_handler' ),
+			'id'    => $validation->cmb_id . '_enable',
+			'type'  => 'checkbox',
+			'value' => 1
+		] );
+
+		$validation->add_field( [
+			'desc'       => __( 'Reglas de validación', 'shiny_form_handler' ),
+			'id'         => $validation->cmb_id . '_rule',
+			'type'       => 'validation',
+			'repeatable' => true,
+		] );
 
 		$redbox = new_cmb2_box( [
 			'id'           => $this->getKey() . '_email',

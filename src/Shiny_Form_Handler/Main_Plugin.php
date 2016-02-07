@@ -52,4 +52,5 @@ class Main_Plugin {
 	public function hookup_ctps() {
 		add_action( 'init', [ $this->admin, '_add_post_type' ] );
 	}
+
 }
