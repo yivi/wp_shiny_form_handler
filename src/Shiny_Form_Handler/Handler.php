@@ -31,8 +31,6 @@ class Handler {
 	 *
 	 */
 	public function _handle_form() {
-		$this->args = $_REQUEST;
-		// ??
 
 		// si no estamos procesando un form handler, salimos de aquí y dejamos que la vida siga su curso en WP.
 		if ( 'shiny_form_handler' !== get_post()->post_type ) {
@@ -44,26 +42,27 @@ class Handler {
 			wp_die( 'Post before get, such is the nature of this game.' );
 		}
 
+		// Pillamos el form
 		$form = get_post();
+
 		$args = [
-			'result'       => 0,
-			'params'       => $_REQUEST,
-			'validated'    => true,
-			'fields_faild' => [ ],
-			'mails_sent'   => 0,
-			'extra_params' => [ ],
+			'result'        => 0,
+			'params'        => $_REQUEST,
+			'validated'     => true,
+			'fields_failed' => [ ],
+			'mails_sent'    => 0,
+			'extra_params'  => [ ],
 		];
 
+		$validation_enabled = get_post_meta( $form->ID, $this->key . '_validation_enable', true );
+		if ( 'on' === $validation_enabled ) {
+			$args = $this->validate( $args, $form );
 
-		// fixme: A ver cómo se resuelve la validación...
-		$args = $this->validate( $args, $form );
-
-		$args = apply_filters( 'shiny_form_post_validate', $args, $this->key );
-
-		// fixme: en uno de los filtros anteriores aprovecharíamos para mandar las cosas al Servicio de Datos
+			$args = apply_filters( 'shiny_form_post_validate', $args, $this->key );
+		}
 
 
-		if ( get_post_meta( $form->ID, $this->key . '_email_enable', true ) ) {
+		if ( true === $args['validated'] && get_post_meta( $form->ID, $this->key . '_email_enable', true ) ) {
 			$this->email( $form, $args );
 		}
 
@@ -86,7 +85,47 @@ class Handler {
 	 */
 	protected function validate( $args, $form ) {
 
-		$args = apply_filters( 'shiny_form_pre_validate', $args, $form->key );
+		$args  = apply_filters( 'shiny_form_pre_validate', $args, $this->key );
+		$rules = (array) get_post_meta( $form->ID, $this->key . '_validation_rules', true );
+
+		if ( ! empty( $rules ) && ! empty( $args['params'] ) ) {
+			foreach ( $rules as $rule ) {
+				if ( empty( $rule['fieldname'] ) ) {
+					continue;
+				}
+				if ( array_key_exists( $rule['fieldname'], $args['params'] ) ) {
+
+					$field_value = $args['params'][ $rule['fieldname'] ];
+					switch ( $rule['validation'] ) {
+						case 'required':
+							if ( empty( $field_value ) ) {
+								$args['fields_failed'][] = $rule['fieldname'];
+								$args['validated']       = false;
+							}
+							break;
+						case 'email':
+							if ( ! filter_var( $field_value, FILTER_VALIDATE_EMAIL ) ) {
+								$args['fields_failed'][] = $rule['fieldname'];
+								$args['validated']       = false;
+							}
+							break;
+						case 'url':
+							if ( ! filter_var( $field_value, FILTER_VALIDATE_URL ) ) {
+								$args['fields_failed'][] = $rule['fieldname'];
+								$args['validated']       = false;
+							}
+							break;
+						case 'phone':
+							// fixme: ñapísima.
+							if ( ! preg_match( '|^[\d\s+-()]{6,13}$|', $field_value ) ) {
+								$args['fields_failed'] = $rule['fieldname'];
+								$args['validated']     = false;
+							}
+					}
+
+				}
+			}
+		}
 
 
 		return $args;
@@ -205,7 +244,7 @@ class Handler {
 		$redirect_url_fail = apply_filters( 'shiny_form_redirect_fail', $redirect_url_fail, $args['params'] );
 
 
-// y si pese a todos nuestros esfuerzos sigue vacío...
+		// y si pese a todos nuestros esfuerzos sigue vacío...
 		if ( empty( $redirect_url_fail ) ) {
 			$redirect_url_fail = $redirect_url;
 		}

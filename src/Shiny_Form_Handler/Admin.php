@@ -122,6 +122,7 @@ class Admin {
 	 */
 	public function _add_options_page_metabox() {
 
+		/** @var \CMB2 $cmb */
 		$cmb = new_cmb2_box( [
 			'id'           => $this->getKey() . '_redirect',
 			'object_types' => [ 'shiny_form_handler' ],
@@ -154,12 +155,13 @@ class Admin {
 
 
 		$cmb->add_field( [
-			'name' => __( 'URL Redirect después de envío (fallo validación, sin implementar)', 'shiny_form_handler' ),
+			'name' => __( 'URL Redirect después de envío (fallo validación)', 'shiny_form_handler' ),
 			'desc' => __( 'Con dominio y query params incluidos. E.g.: http://www.example.com/thanks.php?param1=uno', 'shiny_form_handler' ),
 			'id'   => $cmb->cmb_id . '_url_fail',
 			'type' => 'text_url',
 		] );
 
+		/** @var \CMB2 $validation */
 		$validation = new_cmb2_box(
 			[
 				'id'           => $this->getKey() . '_validation',
@@ -180,11 +182,13 @@ class Admin {
 
 		$validation->add_field( [
 			'desc'       => __( 'Reglas de validación', 'shiny_form_handler' ),
-			'id'         => $validation->cmb_id . '_rule',
+			'id'         => $validation->cmb_id . '_rules',
 			'type'       => 'validation',
 			'repeatable' => true,
 		] );
 
+
+		/** @var \CMB2 $redbox */
 		$redbox = new_cmb2_box( [
 			'id'           => $this->getKey() . '_email',
 			'object_types' => [ 'shiny_form_handler' ],
