@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 4.0.1
 Tested up to: 4.4.1
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: LGPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

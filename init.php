@@ -10,8 +10,8 @@
  * Plugin URI: http://www.yivoff.com
  * Description: blah, blah, blah
  * Author: yivi
- * Version: 1.1.0
- * @version 1.1.0
+ * Version: 1.2.0
+ * @version 1.2.0
  *
  * Text domain: shiny_form_handler
  */
