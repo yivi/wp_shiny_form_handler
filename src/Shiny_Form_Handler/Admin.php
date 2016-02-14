@@ -72,6 +72,26 @@ class Admin {
 	}
 
 
+	public function _styles() {
+		$screen = get_current_screen();
+
+		if ( 'shiny_form_handler' !== $screen->post_type ) {
+			return;
+		}
+
+		$css = [
+			'.cmb-td.cmb-remove-row' => "padding-top: 47px;",
+			'.validation-box'        => "float: left;margin-left:5px;",
+		];
+
+		echo "<style>";
+
+		foreach ( $css as $selector => $rule ) {
+			echo $selector . "{" . $rule . "}";
+		}
+		echo "</style>\n";
+	}
+
 	/**
 	 * Renders the help tabs on top.
 	 *
@@ -188,8 +208,8 @@ class Admin {
 		] );
 
 
-		/** @var \CMB2 $redbox */
-		$redbox = new_cmb2_box( [
+		/** @var \CMB2 $mailbox */
+		$mailbox = new_cmb2_box( [
 			'id'           => $this->getKey() . '_email',
 			'object_types' => [ 'shiny_form_handler' ],
 			'context'      => 'normal',
@@ -198,18 +218,18 @@ class Admin {
 			'title'        => __( 'Ajustes Correo', 'shiny_form_handler' ),
 		] );
 
-		$redbox->add_field( [
+		$mailbox->add_field( [
 			'name'  => __( 'Enviar correo', 'shiny_form_handler' ),
 			'desc'  => __( 'Marcar para enviar correos después de procesar el formulario', 'shiny_form_handler' ),
-			'id'    => $redbox->cmb_id . '_enable',
+			'id'    => $mailbox->cmb_id . '_enable',
 			'type'  => 'checkbox',
 			'value' => 1
 		] );
 
-		$redbox->add_field( [
+		$mailbox->add_field( [
 			'name'       => __( 'Email de Destino', 'shiny_form_handler' ),
 			'desc'       => __( 'Un correo válido, por favor', 'shiny_form_handler' ),
-			'id'         => $redbox->cmb_id . '_addresses',
+			'id'         => $mailbox->cmb_id . '_addresses',
 			'type'       => 'text_email',
 			'repeatable' => true,
 			'options'    => [
@@ -218,18 +238,18 @@ class Admin {
 			],
 		] );
 
-		$redbox->add_field( [
+		$mailbox->add_field( [
 			'name'        => __( 'Asunto del mensaje', 'shiny_form_handler' ),
 			'desc'        => __( 'También se pueden insertar <code>[campos]</code>.' ),
 			'type'        => 'text',
 			'placeholder' => 'Subject...',
-			'id'          => $redbox->cmb_id . '_subject'
+			'id'          => $mailbox->cmb_id . '_subject'
 		] );
 
-		$redbox->add_field( [
+		$mailbox->add_field( [
 			'name' => __( 'Plantilla', 'gorditpr' ),
 			'desc' => __( 'Usar [campo] para insertar campos del formulario. Consultar nombres de los campos con el creador del form.', 'shiny_form_handler' ),
-			'id'   => $redbox->cmb_id . '_template',
+			'id'   => $mailbox->cmb_id . '_template',
 			'type' => 'textarea',
 		] );
 

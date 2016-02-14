@@ -81,7 +81,6 @@ class Handler {
 	 * @param \WP_Post $form
 	 *
 	 * @return mixed
-	 * @todo hacer que esto haga algo
 	 */
 	protected function validate( $args, $form ) {
 
@@ -116,11 +115,18 @@ class Handler {
 							}
 							break;
 						case 'phone':
-							// fixme: ñapísima.
+							// fixme: ñapísima, regla extra genérica para validar teléfonos.
 							if ( ! preg_match( '|^[\d\s+-()]{6,13}$|', $field_value ) ) {
 								$args['fields_failed'] = $rule['fieldname'];
 								$args['validated']     = false;
 							}
+							break;
+						case 'regexp':
+
+							// fixme: implementar la validación regexp
+
+							break;
+
 					}
 
 				}

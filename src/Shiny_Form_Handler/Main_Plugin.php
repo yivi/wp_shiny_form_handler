@@ -34,6 +34,8 @@ class Main_Plugin {
 		add_action( 'cmb2_admin_init', [ $this->admin, '_add_options_page_metabox' ] );
 
 		add_action( 'admin_head', [ $this->admin, '_help_tab' ] );
+
+		add_action( 'admin_head', [ $this->admin, '_styles' ] );
 	}
 
 	/**
@@ -43,7 +45,7 @@ class Main_Plugin {
 		add_action( "wp_ajax_form_handler", [ $this->handler, '_handle_form' ] );
 		add_action( "wp_ajax_nopriv_form_handler", [ $this->handler, '_handle_form' ] );
 
-		add_filter( 'template_redirect', [$this->handler, '_handle_form' ], 99 );
+		add_filter( 'template_redirect', [ $this->handler, '_handle_form' ], 99 );
 	}
 
 	/**

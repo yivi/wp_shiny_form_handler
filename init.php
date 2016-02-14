@@ -10,8 +10,8 @@
  * Plugin URI: http://www.yivoff.com
  * Description: blah, blah, blah
  * Author: yivi
- * Version: 1.2.0
- * @version 1.2.0
+ * Version: 1.2.1
+ * @version 1.2.1
  *
  * Text domain: shiny_form_handler
  */
@@ -47,8 +47,8 @@ function startup() {
 
 	$key = 'shinyform';
 
-	$admin   = new Admin( $key );
-	$handler = new Handler( $key );
+	$admin      = new Admin( $key );
+	$handler    = new Handler( $key );
 	$validation = new ValidationField( $key );
 	$validation->setup();
 

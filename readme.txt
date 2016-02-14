@@ -4,7 +4,7 @@ Donate link: http://example.com/
 Tags: comments, spam
 Requires at least: 4.0.1
 Tested up to: 4.4.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: LGPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ forms).
 Additionally, several hooks are provided for further customization.
 
 `shiny_form_pre_validate`
-Fires just before validation (@todo) is applied. You may receive up to two parameters: array $args, which contain all
+Fires just before validation is applied. You may receive up to two parameters: array $args, which contain all
 the posted input fields, and int $id, which contains the id for the form endpoint.
 
 `shiny_form_post_validate`
