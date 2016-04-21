@@ -54,11 +54,22 @@ class Handler {
 			'extra_params'  => [ ],
 		];
 
+		/**
+		 * Se dispara antes de validar (se dispara aunque no haya validación definida). Si pone $args[validated] a true,
+		 * no se efectuará ninguna otra validación.
+		 *
+		 * @param array $args Los parámetros que hemos recibido vía POST
+		 * @param \WP_Post $form Objecto "form" que está gestionando esta entrada
+		 *
+		 * @since 1.0
+		 */
+		$args  = apply_filters( 'shiny_form_pre_validate', $args, $form );
+
 		$validation_enabled = get_post_meta( $form->ID, $this->key . '_validation_enable', true );
-		if ( 'on' === $validation_enabled ) {
+		if ( 'on' === $validation_enabled && $args['validated'] === false ) {
 			$args = $this->validate( $args, $form );
 
-			$args = apply_filters( 'shiny_form_post_validate', $args, $this->key );
+			$args = apply_filters( 'shiny_form_post_validate', $args, $form );
 		}
 
 
@@ -84,7 +95,6 @@ class Handler {
 	 */
 	protected function validate( $args, $form ) {
 
-		$args  = apply_filters( 'shiny_form_pre_validate', $args, $this->key );
 		$rules = (array) get_post_meta( $form->ID, $this->key . '_validation_rules', true );
 
 		if ( ! empty( $rules ) && ! empty( $args['params'] ) ) {
@@ -199,7 +209,7 @@ class Handler {
 	}
 
 	/**
-	 *  Comporobamos las redirecciones, aplicamos los filtros, y redirigimos al infinito y más allá
+	 *  Comprobamos las redirecciones, aplicamos los filtros, y redirigimos al infinito y más allá
 	 *
 	 * @param array $args
 	 *
