@@ -68,9 +68,9 @@ class Handler {
 		$validation_enabled = get_post_meta( $form->ID, $this->key . '_validation_enable', true );
 		if ( 'on' === $validation_enabled && $args['validated'] === false ) {
 			$args = $this->validate( $args, $form );
-
-			$args = apply_filters( 'shiny_form_post_validate', $args, $form );
+			
 		}
+		$args = apply_filters( 'shiny_form_post_validate', $args, $form );
 
 
 		if ( true === $args['validated'] && get_post_meta( $form->ID, $this->key . '_email_enable', true ) ) {
